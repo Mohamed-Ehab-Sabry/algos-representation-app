@@ -1,15 +1,28 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
+#include <cassert>
 
 using namespace std;
+
+// Definition of the Node structure
+struct Node
+{
+	int value;
+	int priority;
+};
+
+// =====================================================================================
+// BASE HEAP CLASS (MAX-HEAP)
+// ====================================================================================
 
 // Definition of the Max-heap class
 class Heap
 {
-private:
-	vector<int> heap;
-	void heapify_up(int index);		// Helper function to maintain heap property after insertion
-	void heapify_down(int index); 	// Helper function to maintain heap property after extraction
+protected:
+	vector<Node> heap;
+	virtual void heapify_up(int index);		// Helper function to maintain heap property after insertion
+	virtual void heapify_down(int index); 	// Helper function to maintain heap property after extraction
 
 public:
 	void insert(int value); // Insert a new value into the heap
@@ -17,15 +30,21 @@ public:
 	int extractMin();		// Remove and return the minimum value
 	int getMax() const;		// Get the maximum value without removing it
 	int getMin() const;		// Get the minimum value without removing it
-	void display() const;	// Display the heap elements
+	virtual void display() const;	// Display the heap elements
+	virtual void displayAsTreeRecursive(int index = 0, int indent = 0) const;
+
+	// Helper functions to get parent and child indices
+	int parent(int i) const { return (i - 1) / 2; }
+	int left(int i) const { return 2 * i + 1; }
+	int right(int i) const { return 2 * i + 2; }
 };
 // Move element up to maintain heap property (Helper function)
 void Heap :: heapify_up(int index)
 {
 	while (index > 0)
 	{
-		int parent = (index - 1) / 2;
-		if (heap[index] > heap[parent])
+		int parent = this->parent(index);
+		if (heap[index].value > heap[parent].value)
 		{
 			swap(heap[index], heap[parent]);
 			index = parent;
@@ -43,17 +62,17 @@ void Heap ::heapify_down(int index)
 
 	while (index < size)
 	{
-		int left = 2 * index + 1;
-		int right = 2 * index + 2;
+		int left = this->left(index);
+		int right = this->right(index);
 
 		int largest = index;
 
 		// find the largest among index, left and right
-		if (left < size && heap[left] > heap[largest])
+		if (left < size && heap[left].value > heap[largest].value)
 		{
 			largest = left;
 		}
-		if (right < size && heap[right] > heap[largest])
+		if (right < size && heap[right].value > heap[largest].value)
 		{
 			largest = right;
 		}
@@ -73,7 +92,7 @@ void Heap ::heapify_down(int index)
 // Insert a new value into the heap
 void Heap::insert(int value)
 {
-	heap.push_back(value);
+	heap.push_back({ value,0 });
 	heapify_up(heap.size() - 1);
 }
 // Remove and return the maximum value
@@ -85,7 +104,7 @@ int Heap::extractMax()
 		return -1;
 	}
 
-	int max = heap[0];
+	int max = heap[0].value;
 	heap[0] = heap.back();
 	heap.pop_back();
 
@@ -107,13 +126,13 @@ int Heap::extractMin()
 	int minIndex = 0;
 	for (int i = 1; i < heap.size(); i++)
 	{
-		if (heap[i] < heap[minIndex])
+		if (heap[i].value < heap[minIndex].value)
 		{
 			minIndex = i;
 		}
 	}
 
-	int minValue = heap[minIndex];
+	int minValue = heap[minIndex].value;
 	heap.erase(heap.begin() + minIndex);
 
 	return minValue;
@@ -126,7 +145,7 @@ int Heap::getMax() const
 		cout << "Heap is empty!!!!!!!" << endl;
 		return -1;
 	}
-	return heap[0];
+	return heap[0].value;
 }
 // Get the minimum value without removing it
 int Heap::getMin() const
@@ -137,12 +156,12 @@ int Heap::getMin() const
 		return -1;
 	}
 
-	int minValue = heap[0];
+	int minValue = heap[0].value;
 	for (int i = 1; i < heap.size(); i++)
 	{
-		if (heap[i] < minValue)
+		if (heap[i].value < minValue)
 		{
-			minValue = heap[i];
+			minValue = heap[i].value;
 		}
 	}
 
@@ -151,47 +170,59 @@ int Heap::getMin() const
 // Display the heap elements
 void Heap::display() const
 {
-	for (int value : heap)
+	for (Node node : heap)
 	{
-		cout << value << " ";
+		cout << node.value << " ";
 	}
 	cout << endl;
 }
 
+void Heap::displayAsTreeRecursive(int index, int indent) const
+{
+	if (index >= heap.size()) return;
+
+	int right = this->right(index);
+	int left = this->left(index);
+
+	// Print right subtree first (appears on top)
+	displayAsTreeRecursive(right, indent + 4);
+
+	// Print current node
+	if (indent)
+		cout << setw(indent) << ' ';
+	cout << heap[index].value << "\n";
+
+	// Print left subtree
+	displayAsTreeRecursive(left, indent + 4);
+}
+
 // =====================================================================================
 // PRIORITY QUEUE (USING MAX HEAP)
-
-// Definition of the Node structure
-struct Node
-{
-	int value;
-	int priority;
-};
+// =====================================================================================
 
 // Definition of the Priority Queue class
-class Priority_Queue
+class Priority_Queue : public Heap
 {
-private:
-	vector<Node>heap;
-	// Helper functions to get parent and child indices
-	int parent(int i) { return (i - 1) / 2; }
-	int left(int i) { return 2 * i + 1; }
-	int right(int i) { return 2 * i + 2; }
-
-	void heapifyUp(int index);		// Maintain heap property after insertion
-	void heapifyDown(int index);	// Maintain heap property after extraction
+protected:
+	void heapify_up(int index) override;		// Maintain heap property after insertion
+	void heapify_down(int index) override;		// Maintain heap property after extraction
 
 public:
 	void push(int value, int priority); // Insert a new node into the priority queue
 	void pop();							// Remove the node with the highest priority
 
 	Node top() const { return heap.front(); }	// Get the node with the highest priority without removing it
-	bool empty() { return heap.empty(); }		// Check if the priority queue is empty
-	void display() const;						// Display the priority queue elements
+	bool empty() const { return heap.empty(); }		// Check if the priority queue is empty
+	void display() const override;				// Display the priority queue elements
+	void displayAsTreeRecursive(int index = 0, int indent = 0) const override;
 };
 
+// ------------------------------------------------------
+// Implementation of Priority Queue methods
+// ------------------------------------------------------
+
 // Move element up to maintain heap property
-void Priority_Queue::heapifyUp(int index)
+void Priority_Queue::heapify_up(int index)
 {
 	while (index > 0 && heap[index].priority > heap[parent(index)].priority)
 	{
@@ -200,7 +231,7 @@ void Priority_Queue::heapifyUp(int index)
 	}
 }
 // Move element down to maintain heap property
-void Priority_Queue::heapifyDown(int index)
+void Priority_Queue::heapify_down(int index)
 {
 	int size = heap.size();
 	while (index < size)
@@ -231,7 +262,7 @@ void Priority_Queue::heapifyDown(int index)
 void Priority_Queue::push(int value, int priority)
 {
 	heap.push_back({ value,priority });
-	heapifyUp(heap.size() - 1);
+	heapify_up(heap.size() - 1);
 }
 // Remove the node with the highest priority
 void Priority_Queue::pop()
@@ -241,7 +272,7 @@ void Priority_Queue::pop()
 
 	heap[0] = heap.back();
 	heap.pop_back();
-	heapifyDown(0);
+	heapify_down(0);
 }
 // Display the priority queue elements
 void Priority_Queue::display() const
@@ -253,7 +284,42 @@ void Priority_Queue::display() const
 	cout << endl;
 }
 
+void Priority_Queue::displayAsTreeRecursive(int index, int indent) const
+{
+	if (index >= heap.size()) return;
+
+	int right = this->right(index);
+	int left = this->left(index);
+
+	// Print right subtree first (appears on top)
+	displayAsTreeRecursive(right, indent + 4);
+
+	// Print current node
+	if (indent)
+		cout << setw(indent) << ' ';
+	cout << "(" << heap[index].value << ", " << heap[index].priority << ")\n";
+
+	// Print left subtree
+	displayAsTreeRecursive(left, indent + 4);
+}
+
+// =====================================================================================
+// Testing the Heap and Priority Queue classes
+// =====================================================================================
+
+
 int main()
 {
+	Heap maxHeap;
+	maxHeap.insert(10);
+	maxHeap.insert(20);
+	maxHeap.insert(5);
+	maxHeap.insert(30);
+	maxHeap.insert(15);
+
+	cout << "Max-Heap elements: ";
+	maxHeap.display();
+	cout << endl;
+	maxHeap.displayAsTreeRecursive();
 	return 0;
 }

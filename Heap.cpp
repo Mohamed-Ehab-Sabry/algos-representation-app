@@ -21,16 +21,16 @@ class Heap
 {
 protected:
 	vector<Node> heap;
-	virtual void heapify_up(int index);		// Helper function to maintain heap property after insertion
-	virtual void heapify_down(int index); 	// Helper function to maintain heap property after extraction
+	virtual void heapify_up(int index);	  // Helper function to maintain heap property after insertion
+	virtual void heapify_down(int index); // Helper function to maintain heap property after extraction
 
 public:
-	void insert(int value); // Insert a new value into the heap
-	int extractMax();		// Remove and return the maximum value
-	int extractMin();		// Remove and return the minimum value
-	int getMax() const;		// Get the maximum value without removing it
-	int getMin() const;		// Get the minimum value without removing it
-	virtual void display() const;	// Display the heap elements
+	void insert(int value);		  // Insert a new value into the heap
+	int extractMax();			  // Remove and return the maximum value
+	int extractMin();			  // Remove and return the minimum value
+	int getMax() const;			  // Get the maximum value without removing it
+	int getMin() const;			  // Get the minimum value without removing it
+	virtual void display() const; // Display the heap elements
 	virtual void displayAsTreeRecursive(int index = 0, int indent = 0, char branch = '*') const;
 
 	// Helper functions to get parent and child indices
@@ -39,7 +39,7 @@ public:
 	int right(int i) const { return 2 * i + 2; }
 };
 // Move element up to maintain heap property (Helper function)
-void Heap :: heapify_up(int index)
+void Heap ::heapify_up(int index)
 {
 	while (index > 0)
 	{
@@ -92,7 +92,7 @@ void Heap ::heapify_down(int index)
 // Insert a new value into the heap
 void Heap::insert(int value)
 {
-	heap.push_back({ value,0 });
+	heap.push_back({value, 0});
 	heapify_up(heap.size() - 1);
 }
 // Remove and return the maximum value
@@ -187,7 +187,8 @@ void Heap::display() const
 
 void Heap::displayAsTreeRecursive(int index, int indent, char branch) const
 {
-	if (index >= heap.size()) return;
+	if (index >= heap.size())
+		return;
 
 	int right = this->right(index);
 	int left = this->lft(index);
@@ -202,7 +203,6 @@ void Heap::displayAsTreeRecursive(int index, int indent, char branch) const
 
 	// Print left subtree
 	displayAsTreeRecursive(left, indent + 6, '\\'); // left child
-
 }
 
 // =====================================================================================
@@ -213,15 +213,15 @@ void Heap::displayAsTreeRecursive(int index, int indent, char branch) const
 class Priority_Queue : public Heap
 {
 protected:
-	void heapify_up(int index) override;		// Maintain heap property after insertion
-	void heapify_down(int index) override;		// Maintain heap property after extraction
+	void heapify_up(int index) override;   // Maintain heap property after insertion
+	void heapify_down(int index) override; // Maintain heap property after extraction
 
 public:
 	void push(int value, int priority); // Insert a new node into the priority queue
 	void pop();							// Remove the node with the highest priority
 
 	Node top() const { return heap.front(); }	// Get the node with the highest priority without removing it
-	bool empty() const { return heap.empty(); }		// Check if the priority queue is empty
+	bool empty() const { return heap.empty(); } // Check if the priority queue is empty
 	void display() const override;				// Display the priority queue elements
 	void displayAsTreeRecursive(int index = 0, int indent = 0, char branch = '*') const override;
 };
@@ -270,7 +270,7 @@ void Priority_Queue::heapify_down(int index)
 // Insert a new node into the priority queue
 void Priority_Queue::push(int value, int priority)
 {
-	heap.push_back({ value,priority });
+	heap.push_back({value, priority});
 	heapify_up(heap.size() - 1);
 }
 // Remove the node with the highest priority
@@ -295,10 +295,10 @@ void Priority_Queue::display() const
 	cout << endl;
 }
 
-
 void Priority_Queue::displayAsTreeRecursive(int index, int indent, char branch) const
 {
-	if (index >= heap.size()) return;
+	if (index >= heap.size())
+		return;
 
 	int right = this->right(index);
 	int left = this->lft(index);
@@ -322,10 +322,13 @@ void Priority_Queue::displayAsTreeRecursive(int index, int indent, char branch) 
 
 void test_heap()
 {
-	cout << setw(40) << "**HEAP TESTING**" << endl << string(80, '=') << endl;
-	vector<int> arr = { 10, 20, 5, 30, 15, 25, 35, 40, 1, 25, 50, 45 };
+	cout << setw(40) << "**HEAP TESTING**" << endl
+		 << string(80, '=') << endl;
+	vector<int> arr = {10, 20, 5, 30, 15, 25, 35, 40, 1, 25, 50, 45};
 	Heap heap;
-	cout << endl << setw(30) << "INSERTING ELEMENTS" << endl << string(80, '-') << endl;
+	cout << endl
+		 << setw(30) << "INSERTING ELEMENTS" << endl
+		 << string(80, '-') << endl;
 	for (int val : arr)
 	{
 		heap.insert(val);
@@ -337,45 +340,63 @@ void test_heap()
 		cout << string(80, '-') << endl;
 	}
 
-	cout << setw(40) << "**HEAP EXTRACTION**" << endl << string(80, '-') << endl << endl;
+	cout << setw(40) << "**HEAP EXTRACTION**" << endl
+		 << string(80, '-') << endl
+		 << endl;
 
 	cout << "EXPECTED MAX_EXTRACTION: 50" << endl;
 	int max = heap.getMax();
 	assert(heap.extractMax() == max);
 	cout << "OUTPUT: " << max << endl;
-	cout << "Heap after max extraction:\n" << endl;
+	cout << "Heap after max extraction:\n"
+		 << endl;
 	heap.displayAsTreeRecursive();
-	
-	cout << endl << "EXPECTED MIN_EXTRACTION: 1" << endl;
+
+	cout << endl
+		 << "EXPECTED MIN_EXTRACTION: 1" << endl;
 	int min = heap.getMin();
 	assert(heap.extractMin() == min);
 	cout << "OUTPUT: " << min << endl;
-	cout << "Heap after min extraction:\n" << endl;
+	cout << "Heap after min extraction:\n"
+		 << endl;
 	heap.displayAsTreeRecursive();
 
 	assert(heap.getMax() == 45);
 	assert(heap.getMin() == 5);
 }
 
+void heapsort(vector<int> &arr)
+{
+
+	Heap heap;
+	for (int &elm : arr)
+	{
+		heap.insert(elm);
+	}
+	for (int i = 0; i < arr.size(); i++)
+	{
+		arr[arr.size() - i - 1] = heap.extractMax();
+	}
+}
+
 void test_Priority_Queue()
 {
 	cout << setw(40) << "**PRIORITY QUEUE TEST**" << endl
-		<< string(80, '=') << endl;
+		 << string(80, '=') << endl;
 
 	vector<Node> arr = {
-		{10, 2}, {20, 1}, {5, 4}, {30, 3}, {15, 5},
-		{25, 2}, {35, 3}, {40, 1}, {1, 5}, {50, 4}
-	};
+		{10, 2}, {20, 1}, {5, 4}, {30, 3}, {15, 5}, {25, 2}, {35, 3}, {40, 1}, {1, 5}, {50, 4}};
 
 	Priority_Queue pq;
 
-	cout << endl << setw(30) << "INSERTING ELEMENTS" << endl;
+	cout << endl
+		 << setw(30) << "INSERTING ELEMENTS" << endl;
 	cout << string(80, '-') << endl;
 
-	for (auto& node : arr)
+	for (auto &node : arr)
 	{
 		cout << "Pushing value: " << setw(2) << node.value
-			<< " with priority: " << node.priority << endl;
+			 << " with priority: " << node.priority << endl;
 
 		pq.push(node.value, node.priority);
 
@@ -386,24 +407,27 @@ void test_Priority_Queue()
 		pq.display();
 		cout << endl;
 		pq.displayAsTreeRecursive();
-		cout << endl << string(80, '-') << endl;
+		cout << endl
+			 << string(80, '-') << endl;
 	}
 
 	cout << setw(40) << "**EXTRACTION TESTS**" << endl
-		<< string(80, '=') << endl;
+		 << string(80, '=') << endl;
 
 	cout << "EXPECTED TOP ELEMENT: (value=15, priority=5) or (value=1, priority=5)" << endl;
 	Node topBefore = pq.top();
 	cout << "OUTPUT: (value=" << topBefore.value << ", priority=" << topBefore.priority << ")" << endl;
 	assert(topBefore.priority == 5);
 
-	cout << endl << "Popping top element..." << endl;
+	cout << endl
+		 << "Popping top element..." << endl;
 	pq.pop();
 
 	cout << "Queue after one pop:\n";
 	pq.display();
 
-	cout << endl << "EXPECTED NEXT TOP: (priority <= 5)" << endl;
+	cout << endl
+		 << "EXPECTED NEXT TOP: (priority <= 5)" << endl;
 	Node topAfter = pq.top();
 	cout << "OUTPUT: (value=" << topAfter.value << ", priority=" << topAfter.priority << ")" << endl;
 	assert(topAfter.priority <= 5);
@@ -412,14 +436,29 @@ void test_Priority_Queue()
 	cout << "All priority queue tests passed successfully!" << endl;
 }
 
-
-
 int main()
 {
 	cout << string(80, '=') << endl;
 	test_heap();
-	cout << endl << string(80, '=') << endl;
+	cout << endl
+		 << string(80, '=') << endl;
 	test_Priority_Queue();
+
+	vector<int> a = {123,893289,1234, 1 , 12 , -88, 1234, 312, 333, 2001};
+	for (int &elm : a)
+	{
+		cout << elm << " ";
+	}
+	cout << endl;
+	
+	heapsort(a);
+	
+	for (int &elm : a)
+	{
+		cout << elm << " ";
+	}
+	cout << endl;
+
 
 	return 0;
 }

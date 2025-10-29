@@ -39,3 +39,10 @@
 
 # debug information files
 *.dwo
+
+# Ignore everything in Heap folder
+Heap/*
+
+# But keep source and header files
+!Heap/*.cpp
+!Heap/*.h

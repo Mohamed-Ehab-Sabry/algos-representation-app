@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <iomanip>
 #include <vector>
 #include <cassert>
@@ -31,11 +31,11 @@ public:
 	int getMax() const;		// Get the maximum value without removing it
 	int getMin() const;		// Get the minimum value without removing it
 	virtual void display() const;	// Display the heap elements
-	virtual void displayAsTreeRecursive(int index = 0, int indent = 0) const;
+	virtual void displayAsTreeRecursive(int index = 0, int indent = 0, char branch = '*') const;
 
 	// Helper functions to get parent and child indices
 	int parent(int i) const { return (i - 1) / 2; }
-	int left(int i) const { return 2 * i + 1; }
+	int lft(int i) const { return 2 * i + 1; }
 	int right(int i) const { return 2 * i + 2; }
 };
 // Move element up to maintain heap property (Helper function)
@@ -62,7 +62,7 @@ void Heap ::heapify_down(int index)
 
 	while (index < size)
 	{
-		int left = this->left(index);
+		int left = this->lft(index);
 		int right = this->right(index);
 
 		int largest = index;
@@ -177,23 +177,24 @@ void Heap::display() const
 	cout << endl;
 }
 
-void Heap::displayAsTreeRecursive(int index, int indent) const
+void Heap::displayAsTreeRecursive(int index, int indent, char branch) const
 {
 	if (index >= heap.size()) return;
 
 	int right = this->right(index);
-	int left = this->left(index);
+	int left = this->lft(index);
 
 	// Print right subtree first (appears on top)
-	displayAsTreeRecursive(right, indent + 4);
+	displayAsTreeRecursive(right, indent + 6, '/'); // right child
 
 	// Print current node
 	if (indent)
 		cout << setw(indent) << ' ';
-	cout << heap[index].value << "\n";
+	cout << branch << " " << heap[index].value << "\n";
 
 	// Print left subtree
-	displayAsTreeRecursive(left, indent + 4);
+	displayAsTreeRecursive(left, indent + 6, '\\'); // left child
+
 }
 
 // =====================================================================================
@@ -214,7 +215,7 @@ public:
 	Node top() const { return heap.front(); }	// Get the node with the highest priority without removing it
 	bool empty() const { return heap.empty(); }		// Check if the priority queue is empty
 	void display() const override;				// Display the priority queue elements
-	void displayAsTreeRecursive(int index = 0, int indent = 0) const override;
+	void displayAsTreeRecursive(int index = 0, int indent = 0, char branch = '*') const override;
 };
 
 // ------------------------------------------------------
@@ -237,7 +238,7 @@ void Priority_Queue::heapify_down(int index)
 	while (index < size)
 	{
 		int largest = index;
-		int left = this->left(index);
+		int left = this->lft(index);
 		int right = this->right(index);
 
 		if (left < size && heap[left].priority > heap[largest].priority)
@@ -277,30 +278,34 @@ void Priority_Queue::pop()
 // Display the priority queue elements
 void Priority_Queue::display() const
 {
-	for (const auto& node : heap)
+	cout << left << setw(10) << "Value" << setw(10) << "Priority" << endl;
+	cout << string(20, '-') << endl;
+	for (const Node node : heap)
 	{
-		cout << "(" << node.value << ", " << node.priority << ") ";
+		cout << left << setw(10) << node.value << setw(10) << node.priority << endl;
 	}
 	cout << endl;
 }
 
-void Priority_Queue::displayAsTreeRecursive(int index, int indent) const
+
+void Priority_Queue::displayAsTreeRecursive(int index, int indent, char branch) const
 {
 	if (index >= heap.size()) return;
 
 	int right = this->right(index);
-	int left = this->left(index);
+	int left = this->lft(index);
 
-	// Print right subtree first (appears on top)
-	displayAsTreeRecursive(right, indent + 4);
+	// Print right subtree first
+	if (right < heap.size())
+		displayAsTreeRecursive(right, indent + 10, '/');
 
-	// Print current node
-	if (indent)
-		cout << setw(indent) << ' ';
-	cout << "(" << heap[index].value << ", " << heap[index].priority << ")\n";
+	// Print current node with indentation
+	cout << setw(indent) << ' ';
+	cout << branch << "-(" << heap[index].value << ", " << heap[index].priority << ")\n";
 
 	// Print left subtree
-	displayAsTreeRecursive(left, indent + 4);
+	if (left < heap.size())
+		displayAsTreeRecursive(left, indent + 10, '\\');
 }
 
 // =====================================================================================
@@ -316,10 +321,35 @@ int main()
 	maxHeap.insert(5);
 	maxHeap.insert(30);
 	maxHeap.insert(15);
+	maxHeap.insert(25);
+	maxHeap.insert(35);
+	maxHeap.insert(40);
+	maxHeap.insert(1);
+	maxHeap.insert(50);
+	maxHeap.insert(45);
 
 	cout << "Max-Heap elements: ";
 	maxHeap.display();
 	cout << endl;
 	maxHeap.displayAsTreeRecursive();
+
+	cout << endl;
+	cout << string(80, '=') << endl;
+	Priority_Queue pq;
+	pq.push(10, 2);
+	pq.push(20, 5);
+	pq.push(5, 1);
+	pq.push(30, 4);
+	pq.push(15, 3);
+	pq.push(25, 6);
+	pq.push(35, 8);
+	pq.push(40, 7);
+	pq.push(1, 7);
+
+	cout << "Priority Queue elements (value, priority):\n";
+	pq.display();
+	cout << endl;
+	pq.displayAsTreeRecursive();
+
 	return 0;
 }

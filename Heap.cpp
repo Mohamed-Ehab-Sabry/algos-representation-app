@@ -133,7 +133,15 @@ int Heap::extractMin()
 	}
 
 	int minValue = heap[minIndex].value;
-	heap.erase(heap.begin() + minIndex);
+	heap[minIndex] = heap.back();
+	heap.pop_back();
+
+	// Restore heap property
+	if (minIndex < heap.size()) // check if the minIndex still exists in the heap after poping
+	{
+		heapify_down(minIndex);
+		heapify_up(minIndex);
+	}
 
 	return minValue;
 }
@@ -190,7 +198,7 @@ void Heap::displayAsTreeRecursive(int index, int indent, char branch) const
 	// Print current node
 	if (indent)
 		cout << setw(indent) << ' ';
-	cout << branch << " " << heap[index].value << "\n";
+	cout << branch << "-" << heap[index].value << "\n";
 
 	// Print left subtree
 	displayAsTreeRecursive(left, indent + 6, '\\'); // left child
@@ -312,44 +320,106 @@ void Priority_Queue::displayAsTreeRecursive(int index, int indent, char branch) 
 // Testing the Heap and Priority Queue classes
 // =====================================================================================
 
+void test_heap()
+{
+	cout << setw(40) << "**HEAP TESTING**" << endl << string(80, '=') << endl;
+	vector<int> arr = { 10, 20, 5, 30, 15, 25, 35, 40, 1, 25, 50, 45 };
+	Heap heap;
+	cout << endl << setw(30) << "INSERTING ELEMENTS" << endl << string(80, '-') << endl;
+	for (int val : arr)
+	{
+		heap.insert(val);
+		cout << "Inserted: " << val << endl;
+		cout << "Current Heap: ";
+		heap.display();
+		cout << endl;
+		heap.displayAsTreeRecursive();
+		cout << string(80, '-') << endl;
+	}
+
+	cout << setw(40) << "**HEAP EXTRACTION**" << endl << string(80, '-') << endl << endl;
+
+	cout << "EXPECTED MAX_EXTRACTION: 50" << endl;
+	int max = heap.getMax();
+	assert(heap.extractMax() == max);
+	cout << "OUTPUT: " << max << endl;
+	cout << "Heap after max extraction:\n" << endl;
+	heap.displayAsTreeRecursive();
+	
+	cout << endl << "EXPECTED MIN_EXTRACTION: 1" << endl;
+	int min = heap.getMin();
+	assert(heap.extractMin() == min);
+	cout << "OUTPUT: " << min << endl;
+	cout << "Heap after min extraction:\n" << endl;
+	heap.displayAsTreeRecursive();
+
+	assert(heap.getMax() == 45);
+	assert(heap.getMin() == 5);
+}
+
+void test_Priority_Queue()
+{
+	cout << setw(40) << "**PRIORITY QUEUE TEST**" << endl
+		<< string(80, '=') << endl;
+
+	vector<Node> arr = {
+		{10, 2}, {20, 1}, {5, 4}, {30, 3}, {15, 5},
+		{25, 2}, {35, 3}, {40, 1}, {1, 5}, {50, 4}
+	};
+
+	Priority_Queue pq;
+
+	cout << endl << setw(30) << "INSERTING ELEMENTS" << endl;
+	cout << string(80, '-') << endl;
+
+	for (auto& node : arr)
+	{
+		cout << "Pushing value: " << setw(2) << node.value
+			<< " with priority: " << node.priority << endl;
+
+		pq.push(node.value, node.priority);
+
+		cout << "Current top: ";
+		Node top = pq.top();
+		cout << "(value=" << top.value << ", priority=" << top.priority << ")" << endl;
+
+		pq.display();
+		cout << endl;
+		pq.displayAsTreeRecursive();
+		cout << endl << string(80, '-') << endl;
+	}
+
+	cout << setw(40) << "**EXTRACTION TESTS**" << endl
+		<< string(80, '=') << endl;
+
+	cout << "EXPECTED TOP ELEMENT: (value=15, priority=5) or (value=1, priority=5)" << endl;
+	Node topBefore = pq.top();
+	cout << "OUTPUT: (value=" << topBefore.value << ", priority=" << topBefore.priority << ")" << endl;
+	assert(topBefore.priority == 5);
+
+	cout << endl << "Popping top element..." << endl;
+	pq.pop();
+
+	cout << "Queue after one pop:\n";
+	pq.display();
+
+	cout << endl << "EXPECTED NEXT TOP: (priority <= 5)" << endl;
+	Node topAfter = pq.top();
+	cout << "OUTPUT: (value=" << topAfter.value << ", priority=" << topAfter.priority << ")" << endl;
+	assert(topAfter.priority <= 5);
+
+	cout << string(80, '=') << endl;
+	cout << "All priority queue tests passed successfully!" << endl;
+}
+
+
 
 int main()
 {
-	Heap maxHeap;
-	maxHeap.insert(10);
-	maxHeap.insert(20);
-	maxHeap.insert(5);
-	maxHeap.insert(30);
-	maxHeap.insert(15);
-	maxHeap.insert(25);
-	maxHeap.insert(35);
-	maxHeap.insert(40);
-	maxHeap.insert(1);
-	maxHeap.insert(50);
-	maxHeap.insert(45);
-
-	cout << "Max-Heap elements: ";
-	maxHeap.display();
-	cout << endl;
-	maxHeap.displayAsTreeRecursive();
-
-	cout << endl;
 	cout << string(80, '=') << endl;
-	Priority_Queue pq;
-	pq.push(10, 2);
-	pq.push(20, 5);
-	pq.push(5, 1);
-	pq.push(30, 4);
-	pq.push(15, 3);
-	pq.push(25, 6);
-	pq.push(35, 8);
-	pq.push(40, 7);
-	pq.push(1, 7);
-
-	cout << "Priority Queue elements (value, priority):\n";
-	pq.display();
-	cout << endl;
-	pq.displayAsTreeRecursive();
+	test_heap();
+	cout << endl << string(80, '=') << endl;
+	test_Priority_Queue();
 
 	return 0;
 }

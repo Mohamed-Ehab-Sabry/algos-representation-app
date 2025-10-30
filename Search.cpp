@@ -81,7 +81,7 @@ int main()
     const int SIZE = 50;
     int arr[SIZE];
     for (int i = 0; i < SIZE; ++i)
-        arr[i] = i + 1; // sorted array 1..50 for binary searches
+        arr[i] = i + 1; 
 
     int choice = 0;
     while (true)

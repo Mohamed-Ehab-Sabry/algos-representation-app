@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 using namespace std;
 
@@ -365,20 +366,6 @@ void test_heap()
 	assert(heap.getMin() == 5);
 }
 
-void heapsort(vector<int> &arr)
-{
-
-	Heap heap;
-	for (int &elm : arr)
-	{
-		heap.insert(elm);
-	}
-	for (int i = 0; i < arr.size(); i++)
-	{
-		arr[arr.size() - i - 1] = heap.extractMax();
-	}
-}
-
 void test_Priority_Queue()
 {
 	cout << setw(40) << "**PRIORITY QUEUE TEST**" << endl
@@ -436,6 +423,50 @@ void test_Priority_Queue()
 	cout << "All priority queue tests passed successfully!" << endl;
 }
 
+void heapsort(vector<int> &arr)
+{
+
+	Heap heap;
+	for (int &elm : arr)
+	{
+		heap.insert(elm);
+	}
+	for (int i = 0; i < arr.size(); i++)
+	{
+		arr[arr.size() - i - 1] = heap.extractMax();
+	}
+}
+
+void test_heapsort()
+{
+	cout << setw(40) << "**HEAPSORT TEST**" << endl
+		 << string(80, '=') << endl;
+
+	// hard-coded input (includes duplicates and negative)
+	vector<int> a = {123, 893289, 1234, 1, 12, -88, 1234, 312, 333, 2001};
+	vector<int> expected = a;
+
+	cout << "Input: ";
+	for (int x : a)
+		cout << x << " ";
+	cout << endl;
+
+	// run heapsort implementation
+	heapsort(a);
+
+	cout << "Heapsort output: ";
+	for (int x : a)
+		cout << x << " ";
+	cout << endl;
+
+	// validate: compare with std::sort result (checks ordering and element multiset)
+	sort(expected.begin(), expected.end());
+	assert(a == expected); // will abort if heapsort produced wrong result
+
+	cout << "Heapsort test passed successfully." << endl;
+	cout << string(80, '=') << endl;
+}
+
 int main()
 {
 	cout << string(80, '=') << endl;
@@ -443,22 +474,7 @@ int main()
 	cout << endl
 		 << string(80, '=') << endl;
 	test_Priority_Queue();
-
-	vector<int> a = {123,893289,1234, 1 , 12 , -88, 1234, 312, 333, 2001};
-	for (int &elm : a)
-	{
-		cout << elm << " ";
-	}
-	cout << endl;
-	
-	heapsort(a);
-	
-	for (int &elm : a)
-	{
-		cout << elm << " ";
-	}
-	cout << endl;
-
+	test_heapsort();
 
 	return 0;
 }

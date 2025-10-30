@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <cassert>
 
 #define ll long long
 
@@ -151,7 +152,8 @@ ll matrix_fib(ll n)
 
     if (n == 0 || n == 1)
     {
-        return 1;
+        fun_cur_depth--;
+        return n;
     }
 
     vector<vector<ll>> transformation_matrix = {{1, 1}, {1, 0}};
@@ -163,10 +165,39 @@ ll matrix_fib(ll n)
     return res[0][0] % MOD;
 }
 
+// --- simple tests ---
+void run_simple_asserts()
+{
+    // check known Fibonacci values
+    reset_counters();
+    assert(dp_fib(0) == 0);
+    assert(dp_fib(1) == 1);
+    assert(dp_fib(5) == 5);
+    assert(dp_fib(10) == 55);
+
+    reset_counters();
+    assert(matrix_fib(0) == 0);
+    assert(matrix_fib(1) == 1);
+    assert(matrix_fib(5) == 5);
+    assert(matrix_fib(10) == 55);
+    // naive recursion only for small n
+    reset_counters();
+    assert(rec_fib(0) == 0);
+    assert(rec_fib(1) == 1);
+    assert(rec_fib(5) == 5);
+    assert(rec_fib(10) == 55);
+
+    cout << "Simple tests passed successfully.\n";
+}
+// --- end asserts ---
+
 int main()
 {
     reset_counters();
     ll num;
+
+    run_simple_asserts();
+    reset_counters();
 
     cout << "Hello dear user, please enter the order of the fib num you want to calc: ";
     cin >> num;

@@ -1,4 +1,8 @@
 #include <iostream>
+#include <cassert>
+#include <iomanip>
+#include <string>
+
 using namespace std;
 
 
@@ -6,7 +10,7 @@ int seqCounter;
 
 int seqSearch(int arr[], int n, int x)
 {
-    for (int i = 0; i <= n ; i++)
+    for (int i = 0; i <= n; i++)
     {
         seqCounter++; 
         if(arr[i] == x)
@@ -23,9 +27,9 @@ int recSeqSearch(int arr[], int n, int x)
     rSeqCounter++; 
     if (n == -1)
         return -1;
-    if(arr[n] == x)
+    if (arr[n] == x)
         return n;
-    return recSeqSearch(arr, n-1, x);
+    return recSeqSearch(arr, n - 1, x);
 }
 
 
@@ -36,16 +40,16 @@ int binaryCounter;
 int binarySearch(int arr[], int n, int x)
 {
     int l = 0, r = n;
-    while(l <= r)
+    while (l <= r)
     {
         binaryCounter++; 
         int mid = l + (r - l) /2;
         if(arr[mid] == x)
             return mid;
         else if (arr[mid] < x)
-            l = mid+1;
+            l = mid + 1;
         else
-            r = mid-1;
+            r = mid - 1;
     }
     return -1;
 }
@@ -57,14 +61,14 @@ int rBinaryCounter;
 
 int recBinarySearch(int arr[], int l, int r, int x)
 {
-    if(l > r)
+    if (l > r)
         return -1;
     int mid = l + (r - l) /2;
     rBinaryCounter++; 
     if(arr[mid] == x)
         return mid;
     else if (arr[mid] < x)
-        return recBinarySearch(arr, mid+1, r, x);
+        return recBinarySearch(arr, mid + 1, r, x);
     else
         return recBinarySearch(arr, l, mid-1, x);
 }
